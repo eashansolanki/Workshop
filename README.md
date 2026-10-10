@@ -1,6 +1,6 @@
 # Workshop
 
-WARNING: MACOS ONLY FOR NOW 
+WARNING: MACOS & Linux ONLY FOR NOW 
 Local tools for **LM Studio** and **Bionic**: research the web, create documents, write code and design objects in Fusion and OpenScad.
 
 Workshop provides eight independently selectable MCP integrations in LM Studio. Bionic uses the same workflows as skills, backed by the same local tools.
