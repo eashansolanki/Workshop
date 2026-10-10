@@ -165,10 +165,72 @@ def run_logged(command: list[str], *, env: dict, log: Path, cwd: Path | None = N
         subprocess.run(command, env=env, cwd=cwd, stdout=stream, stderr=stream, check=True)
 
 
+def previous_installation(base: Path) -> dict:
+    """Validate stored installation paths before an update, without changing them."""
+    state = base / "installed.json"
+    if state.is_symlink():
+        raise ValueError("Installation metadata must not be a symbolic link")
+    data = json.loads(state.read_text())
+    if not isinstance(data, dict):
+        raise ValueError("Invalid installation metadata")
+    for key in ("release", "workspace", "config"):
+        if not isinstance(data.get(key), str) or not Path(data[key]).is_absolute():
+            raise ValueError("Invalid installation path: " + key)
+    release = Path(data["release"])
+    if release.is_symlink() or release.resolve().parent != (base / "releases").resolve():
+        raise ValueError("Previous release is outside the managed releases folder")
+    return data
+
+
+def publish_shared_files(root: Path, base: Path, environment: dict[str, str]):
+    """Publish skills and Fusion scripts at stable paths that survive release cleanup."""
+    for name, source in (("Bionic", root / "Bionic"), ("fusion/WorkshopDesign", root / "fusion/WorkshopDesign")):
+        target = base / name
+        if target.is_symlink() or any(parent.is_symlink() for parent in target.parents if parent != base.parent):
+            raise ValueError("Shared installation path must not contain symbolic links")
+        target.mkdir(parents=True, exist_ok=True)
+        for file in source.rglob("*"):
+            if file.is_file():
+                destination = target / file.relative_to(source)
+                if destination.is_symlink():
+                    raise ValueError("Shared installation file is a symbolic link")
+                atomic_text(destination, file.read_text())
+
+
+def clean_old_releases(base: Path, current: Path, workspace: Path, protected: tuple[Path, ...] = ()) -> list[str]:
+    """Remove identifiable managed releases, never symlinks, output folders or unrelated files."""
+    releases = base / "releases"
+    if releases.is_symlink() or current.resolve().parent != releases.resolve():
+        raise ValueError("Invalid managed releases directory")
+    removed = []
+    for candidate in releases.iterdir():
+        if candidate.is_symlink() or not candidate.is_dir() or candidate.resolve() == current.resolve():
+            continue
+        # A user may have selected an output folder inside a release; retain that release.
+        if any(path.resolve().is_relative_to(candidate.resolve()) for path in (workspace, *protected)):
+            continue
+        manifest = candidate / "plugin.json"
+        if manifest.is_symlink():
+            continue
+        try:
+            data = json.loads(manifest.read_text())
+        except (OSError, ValueError):
+            continue
+        if not isinstance(data, dict) or data.get("name") != "workshop":
+            continue
+        shutil.rmtree(candidate)
+        removed.append(candidate.name)
+    return removed
+
+
 def install(options):
     root = options.release.resolve()
     runtime = options.runtime.resolve()
-    workspace = options.workspace.resolve()
+    updating = getattr(options, "update", False)
+    previous = previous_installation(runtime.parent) if updating else None
+    # Updates retain the existing destinations unless explicit environment overrides were provided.
+    workspace = (Path(previous["workspace"]) if previous and "WORKSHOP_WORKSPACE" not in os.environ else options.workspace).resolve()
+    config_target = Path(previous["config"]) if previous and "WORKSHOP_LMSTUDIO_CONFIG" not in os.environ else options.config
     workspace.mkdir(parents=True, exist_ok=True)
     uv = runtime / "bin/uv"
     log = options.log or runtime.parent / "setup.log"
@@ -191,10 +253,20 @@ def install(options):
     atomic_text(root / "config/bionic.env.json", json.dumps(environment, indent=2))
     make_bionic_hub(root, environment)
     progress("Connecting LM Studio", "Adding your integrations and saving a backup of your existing settings.")
-    backup = merge_config(options.config, config)
-    atomic_text(options.runtime.parent / "installed.json", json.dumps({"release": str(root), "workspace": str(workspace), "config": str(options.config), "backup": str(backup) if backup else None}, indent=2))
+    publish_shared_files(root, runtime.parent, environment)
+    backup = merge_config(config_target, config)
+    atomic_text(options.runtime.parent / "installed.json", json.dumps({"release": str(root), "workspace": str(workspace), "config": str(config_target.resolve()), "backup": str(backup) if backup else None}, indent=2))
+    if updating:
+        try:
+            removed = clean_old_releases(runtime.parent, root, workspace, (config_target, *((backup,) if backup else ())))
+            progress("Old releases cleaned", f"Removed {len(removed)} old managed release(s). Runtime downloads and generated files were kept.")
+        except (OSError, ValueError) as error:
+            progress("Cleanup incomplete", f"The update succeeded, but some old files could not be removed: {error}")
     progress("Installation complete", "Restart LM Studio to see all eight integrations. In Bionic, add the skill file shown below through Settings → Skills. It includes all eight workflows.")
-    print(str(root / "Bionic/SKILL.md"))
+    print(str(runtime.parent / "Bionic/SKILL.md"))
+    print("Fusion script folder: " + str(runtime.parent / "fusion/WorkshopDesign"))
+    if updating:
+        print("If Bionic or Fusion references an old release folder, replace it once with the stable paths above. Future updates keep these paths.")
 
 
 def main():
@@ -204,6 +276,7 @@ def main():
     parser.add_argument("--workspace", type=Path, required=True)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--log", type=Path)
+    parser.add_argument("--update", action="store_true")
     options = parser.parse_args()
     try:
         install(options)

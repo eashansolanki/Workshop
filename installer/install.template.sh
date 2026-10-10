@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Workshop: a self-contained installer for macOS and Linux.
 set -euo pipefail
+UPDATE=@@UPDATE@@
 YES=0
 CHECK=0
 for argument in "$@"; do
@@ -8,7 +9,7 @@ for argument in "$@"; do
         --yes) YES=1 ;;
         --check) CHECK=1 ;;
         --help|-h)
-            printf 'Workshop\n\nRun: bash install.sh\nOptions: --yes (no prompt), --check (verify package only)\n'
+            printf 'Workshop\n\nRun: bash install.sh (install) or bash installupdate.sh (update)\nOptions: --yes (no prompt), --check (verify package only)\n'
             exit 0 ;;
         *) printf 'Unknown option: %s\n' "$argument" >&2; exit 2 ;;
     esac
@@ -57,6 +58,14 @@ if [ "$CHECK" = 1 ]; then
     printf 'Workshop package verified: eight integrations and Bionic workflows.\n'
     exit 0
 fi
+if [ "$UPDATE" = 1 ] && [ ! -f "$BASE/installed.json" ]; then
+    printf 'No existing Workshop installation found. Run install.sh first, or set WORKSHOP_HOME to your installation folder.\n' >&2; exit 1
+fi
+UPDATE_ARGUMENT=
+if [ "$UPDATE" = 1 ]; then
+    UPDATE_ARGUMENT=--update
+    printf 'Updating Workshop. Old managed releases are removed only after successful checks. Your output files are preserved. Close Fusion and Bionic as well as LM Studio.\n'
+fi
 printf '\nWorkshop\n\nThis installs eight LM Studio integrations and one Bionic skill.\nExisting LM Studio settings are backed up.\nPython and JavaScript tools run with your user permissions.\nClose LM Studio before continuing.\n\n'
 if [ "$YES" = 0 ]; then
     if [ ! -r /dev/tty ]; then
@@ -93,10 +102,10 @@ if [ ! -x "$RUNTIME/bin/uv" ]; then
         printf 'Download failed. Details: %s\n' "$LOG" >&2; exit 1
     fi
 fi
-RELEASE="$BASE/releases/0.3.1-$(date +%s)-$$"
+RELEASE="$BASE/releases/0.4.0-$(date +%s)-$$"
 mkdir -p "$RELEASE"
 cp -R "$TEMPORARY/workshop/." "$RELEASE/"
-if ! "$RUNTIME/bin/uv" run --no-project --managed-python --python 3.12 "$RELEASE/installer/install.py" --release "$RELEASE" --runtime "$RUNTIME" --workspace "$WORKSPACE" --config "$CONFIG" --log "$LOG"; then
+if ! "$RUNTIME/bin/uv" run --no-project --managed-python --python 3.12 "$RELEASE/installer/install.py" --release "$RELEASE" --runtime "$RUNTIME" --workspace "$WORKSPACE" --config "$CONFIG" --log "$LOG" $UPDATE_ARGUMENT; then
     printf '\nSetup failed. Details: %s\n' "$LOG" >&2; exit 1
 fi
 printf '\nNo compilation or manual configuration was needed.\n'

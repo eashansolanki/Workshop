@@ -86,10 +86,7 @@ Structured file operations stay inside the workspace. Python, Node, npm, OpenSCA
 
 ## Genuine Fusion files
 
-1. Call `prepare_fusion_design` with a recipe JSON path, a new `.f3d` output path and a recipe like `examples/plate.json`.
-2. In Autodesk Fusion open Utilities > Scripts and Add-Ins; add the `fusion/WorkshopDesign` script folder.
-3. Run WorkshopDesign and choose the generated recipe JSON.
-4. Fusion creates sketches/extrusions in a new parametric design and exports the archive. The script records success in a companion `.result.json`. Open the resulting F3D in Fusion to validate it.
+Use the [Fusion setup and export walkthrough](docs/GETTING-STARTED.md#4-add-the-fusion-script-once) for script registration, installed folder locations and the first design export.
 
 The recipe supports boxes/cylinders and new/join/cut operations, in millimetres. Box origins are lower corners, cylinder origins are axes. Cuts remove earlier material; joins must intersect existing bodies. Disjoint bodies use new. The bridge converts millimetres to Fusion API centimetres. Complex designs require custom Fusion scripts written using the Python tool and run in Fusion. Preparing a job is explicitly **pending**, never a claim that an F3D already exists. Assemblies with external references may need F3Z.
 
@@ -97,6 +94,6 @@ The recipe supports boxes/cylinders and new/join/cut operations, in millimetres.
 
 ## Verification
 
-Run `python -m pip install -e '.[test]'` and `python -m pytest tests -q` in the plugin environment. See [the test report](TEST-REPORT.md) for the actual development checks and limits. `knowledge.txt` indexes every Python function and loop location. The host-app UI connection and Fusion archive export require final verification in their respective applications.
+This upload bundle excludes development tests and reports. Check server startup, affected tools and generated output files in an isolated workspace. Fusion archive export and host-app behavior require verification inside their respective applications.
 
 For release packaging and Python wheel builds, see the [build guide](docs/BUILDING.md).

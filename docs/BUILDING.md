@@ -4,13 +4,12 @@ Workshop is a Python project with a shell installer. Most users only need `bash 
 
 ## Set up development dependencies
 
-Use Python 3.11 or newer. The current verified environment uses Python 3.12. Node.js/npm are required for JavaScript and Next.js tests.
+Use Python 3.11 or newer. The current verified environment uses Python 3.12. Node.js/npm are required for JavaScript and Next.js tools.
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-tested.txt
-.venv/bin/python -m pip install -e '.[test]'
-.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pip install -e .
 ```
 
 On Windows, use `python` to create the environment and `.venv\Scripts\python.exe` for subsequent commands. The shell installer itself requires macOS or Linux.
@@ -30,20 +29,20 @@ No native compilation is needed. The release builder uses the Python standard li
 ```sh
 python3 scripts/build_release.py
 bash -n dist/install.sh
+bash -n dist/installupdate.sh
 bash dist/install.sh --check
-.venv/bin/python -m pytest tests -q
+bash dist/installupdate.sh --check
 ```
 
-The builder refreshes `knowledge.txt`, packages source and resources, embeds a checksummed payload in the shell installer, and creates:
 
 | Artifact | Purpose |
 | --- | --- |
 | `dist/install.sh` | Standalone installer; no source archive required |
+| `dist/installupdate.sh` | Standalone updater for existing installations |
 | `dist/workshop.zip` | Source package with documentation and installer |
 | `dist/SETUP.md` | Copy of the user-facing README |
-| `dist/TEST-REPORT.md` | Recorded checks and verification limits |
 
-It also refreshes the root `install.sh`. The generated installer must be rebuilt after changing source, skills, dependencies or installer code. Edit `installer/install.template.sh`, not the generated payload. `dist/`, virtual environments, browser downloads and Python build outputs are excluded from the release payload.
+It also refreshes the root `install.sh` and `installupdate.sh`. The generated installer must be rebuilt after changing source, skills, dependencies or installer code. Edit `installer/install.template.sh`, not the generated payload. `dist/`, virtual environments, browser downloads and Python build outputs are excluded from the release payload.
 
 ## Build a Python distribution
 
@@ -58,10 +57,10 @@ This creates a wheel and source distribution in `dist/`. The wheel includes Pyth
 
 ## Prepare a GitHub release
 
-1. Run the automated tests and record actual results in `TEST-REPORT.md`.
+1. Verify the affected tools through an MCP client and inspect generated outputs. This upload bundle excludes the private development test suite and verification report.
 2. Rebuild and verify the installer using the commands above.
 3. Test installation with a temporary workspace and temporary LM Studio configuration before using real settings. `WORKSHOP_HOME`, `WORKSHOP_WORKSPACE` and `WORKSHOP_LMSTUDIO_CONFIG` support isolated installation paths.
-4. Attach `dist/install.sh` and `dist/workshop.zip` to the release.
+4. Attach `dist/install.sh`, `dist/installupdate.sh` and `dist/workshop.zip` to the release.
 5. Include any application-level checks still pending in the release notes.
 
 The repository does not assume a GitHub owner, release URL or hosted installer endpoint. Replace download links with your real release URLs when publishing.

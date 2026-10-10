@@ -20,6 +20,20 @@ The self-contained installer sets up private Python and Node runtimes, downloads
 
 For example: “Use Workshop's Excel integration to create a monthly budget spreadsheet in my workspace.”
 
+For the complete walkthrough, including where to find and register the Fusion script, see [Set up Workshop](docs/GETTING-STARTED.md).
+
+## Update an existing installation
+
+Download the latest `installupdate.sh` from this repository or its release, close LM Studio, Bionic and Fusion, then run:
+
+```sh
+bash installupdate.sh
+```
+
+The script installs the version bundled in that download, checks all eight integrations and refreshes LM Studio settings before removing old managed release folders. It keeps your generated documents/CAD files, custom workspace/configuration paths, unrelated integrations, settings backups and runtime downloads. Download a new updater for each release; it does not fetch unpublished changes from GitHub.
+
+Bionic and Fusion now have stable registration paths. For an installation made before this update, replace the old Bionic skill with `~/Library/Application Support/Workshop/Bionic/SKILL.md` and register `~/Library/Application Support/Workshop/fusion/WorkshopDesign` in Fusion once. Use the paths printed by the updater on Linux or custom installations. Later updates keep these registration paths.
+
 ## Included integrations
 
 | Integration | Tools and outputs |
@@ -44,7 +58,7 @@ Install additional applications only for the formats you need:
 - **OpenSCAD** for compiled meshes and previews.
 - **Autodesk Fusion** for genuine F3D export. Run the included script inside Fusion; a prepared recipe is not yet an F3D file.
 
-Numbers conversion and live Fusion archive export remain unverified. Document tools produce editable base layouts; visual review and spreadsheet formula recalculation require the appropriate application. Printer references provide guidance, not printer control. See the [test report](TEST-REPORT.md) for verified behavior and remaining limits.
+Numbers conversion and live Fusion archive export remain unverified. Document tools produce editable base layouts; visual review and spreadsheet formula recalculation require the appropriate application. Printer references provide guidance, not printer control. Numbers conversion and live Fusion archive export remain unverified.
 
 Python and JavaScript run with your user permissions. Structured file tools stay within the selected workspace and refuse to overwrite files. Code execution is not an operating-system sandbox.
 
@@ -73,15 +87,14 @@ The installer prints the Bionic skill path and keeps a setup log in the installa
 
 ## Development and documentation
 
+- [Installation, Bionic and Fusion walkthrough](docs/GETTING-STARTED.md)
 - [Source setup and host configuration](DEVELOPER-SETUP.md)
 - [Build and release guide](docs/BUILDING.md)
+- [Complete Fusion setup and export guide](docs/FUSION360.md)
+- [Full feature list](docs/FEATURES.md)
 - [CAD export guide](docs/CAD.md)
 - [Contributing](CONTRIBUTING.md)
-- [Verification report](TEST-REPORT.md)
-
-Source code is in `workshop/`, workflows in `skills/`, the Fusion bridge in `fusion/`, and installation code in `installer/`.
-
-## FUSION 360 SETUP GUIDE
 
 ## Help
+
 If you can help develop this project more please do by submitting a PR as some of the refinements and two features have been vibe coded.

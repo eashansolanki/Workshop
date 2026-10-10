@@ -1,6 +1,6 @@
 # Contributing to Workshop
 
-Use the existing Python/MCP tools and JavaScript/Node integration. Start with the [build guide](docs/BUILDING.md) and run the test suite before submitting a change.
+Use the existing Python/MCP tools and JavaScript/Node integration. Start with the [build guide](docs/BUILDING.md) and verify affected tools before submitting a change. This release folder excludes the private development test suite.
 
 ## Where changes belong
 
@@ -15,18 +15,16 @@ Use the existing Python/MCP tools and JavaScript/Node integration. Start with th
 | `skills/` | Bionic workflows and MCP instructions |
 | `workshop/resources/` | Packaged copies of workflows and printer references |
 | `installer/` | Installer engine and shell template |
-| `scripts/build_release.py` | Installer/source release packaging and knowledge index |
-| `tests/` | Automated verification |
+| `scripts/build_release.py` | Installer/source release packaging |
 
-Keep each `skills/*/SKILL.md` synchronized with its copy in `workshop/resources/skills/`. Keep `config/printers.json` synchronized with its packaged resource. Integration tests verify these copies.
+Keep each `skills/*/SKILL.md` synchronized with its copy in `workshop/resources/skills/`. Keep `config/printers.json` synchronized with its packaged resource. Check that both copies match when updating a workflow.
 
 ## Before submitting
 
-- Add meaningful checks for changed behavior and run `python -m pytest tests -q` in the development environment.
+- Check changed behavior through the runtime tools and inspect the generated outputs.
 - Describe what changed, how it was tested and any application-level verification still pending.
 - Preserve unrelated host configuration and avoid overwriting user documents.
 - Return real outputs or explicit dependency/pending results; do not claim an export completed when only a recipe was prepared.
-- Run `python3 scripts/build_release.py` to refresh `install.sh` and `knowledge.txt` after source changes.
 - Exclude local environments, browser profiles, generated host configuration, credentials and user files from commits.
 
 For a bug report, include the operation, operating system, relevant dependency versions and the error or setup-log excerpt. Remove credentials and personal paths before sharing logs.
