@@ -11,7 +11,7 @@ import zipfile
 root=Path(__file__).resolve().parents[1]
 output=root/'dist'
 output.mkdir(exist_ok=True)
-excluded={'__pycache__','.pytest_cache','.venv','.browsers','dist','build','.git','tests'}
+excluded={'.DS_Store','__pycache__','.pytest_cache','.venv','.browsers','dist','build','.git','tests'}
 buffer=io.BytesIO()
 with tarfile.open(fileobj=buffer,mode='w:gz') as archive:
     for file in sorted(root.rglob('*')):

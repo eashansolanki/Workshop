@@ -1,8 +1,8 @@
 # Workshop with Autodesk Fusion: complete guide
 
-Workshop prepares a design job in LM Studio or Bionic. You then run **WorkshopDesign inside Autodesk Fusion** to build the geometry and export a genuine `.f3d` file.
+Workshop prepares a design job in LM Studio or Bionic. **WorkshopBridge** can run it automatically inside Autodesk Fusion, or you can run **WorkshopDesign** manually. Both export a genuine local `.f3d` archive.
 
-This guide covers the Workshop bridge, not every feature of Autodesk Fusion. The bridge supports boxes, cylinders and new/join/cut operations. Live F3D export is implemented but remains unverified.
+This guide covers the Workshop bridge, not every feature of Autodesk Fusion. The recipe supports boxes, cylinders and new/join/cut operations. Native STEP/STP, IGES/IGS, SAT and F3D import jobs use Fusion’s import manager. Live F3D export is implemented but remains unverified.
 
 ## 1. Install or update Workshop
 
@@ -72,6 +72,30 @@ Keep that source folder in a permanent location if you register this copy. Movin
 
 If you used `WORKSHOP_HOME`, use `<your installation folder>/fusion/WorkshopDesign`. The installer and updater print the full script-folder path when they finish. The Linux shell installer can prepare recipes and source files; the Fusion bridge still requires an environment where Autodesk Fusion itself runs.
 
+## Automatic execution: register WorkshopBridge once
+
+The installer/updater now provides a second folder:
+
+```text
+~/Library/Application Support/Workshop/fusion/WorkshopBridge
+```
+
+From a source checkout use `fusion/WorkshopBridge`. On Windows or a custom installation, use the corresponding absolute folder path.
+
+Open Fusion’s **Scripts and Add-Ins** window, select **Add-Ins**, add the **WorkshopBridge folder**, then run it and enable **Run on Startup**. Keep the adjacent WorkshopDesign folder; the add-in loads its geometry engine. This registration is required once. The tool cannot bypass Fusion’s add-in registration controls.
+
+After registration, ask the model to prepare a job, call `run_fusion_design` and check `fusion_design_status`. The run tool can launch Fusion on macOS. On Windows set `WORKSHOP_FUSION_APP` to the executable path. Linux can prepare jobs but does not have a supported native Fusion launcher.
+
+The add-in checks a local queue and dispatches work through Fusion custom events on its main thread. It waits until the Select command is active, so finish any active sketch/command if a job stays queued. Pending and queued jobs have not exported. Successful status includes `design_url`, `design_link`, output path, bytes and warnings. Show that link to the user. It is a local archive link, not an Autodesk cloud share URL. `open_fusion_design` queues reopening a saved workspace F3D through the add-in.
+
+Default queue: `~/.workshop/fusion-bridge`. To override it, set `WORKSHOP_FUSION_BRIDGE` in the MCP environment and use the same directory in the add-in’s `bridge-config.json` (`{"directory": "/absolute/path"}`). The installer writes this configuration at the stable add-in path. Do not expose the queue to untrusted users; it runs CAD operations with your local privileges.
+
+Receipts prevent duplicate execution after retries or Fusion restarts. If a run was interrupted, status becomes `execution_unconfirmed`; inspect Fusion and the target file, then prepare a new job/output filename. Opening an archive returns `queued_open`, which is a request, not confirmation that Fusion opened it.
+
+For existing complex CAD, use `prepare_fusion_import(recipe_file="import-job.json", source="part.step", output="part.f3d")`, then run/check the job. Source files must already be in the configured workspace. Meshes and F3Z assemblies are not supported by the native import tool. Advanced geometry uses `prepare_fusion_script`: generate native Python defining `build(design, root)`, then queue it with the same run/status tools. Trusted code must be enabled; the standard installer enables it. Fusion requests stay in Fusion and do not require OpenSCAD or mesh import.
+
+The remaining sections describe the manual script fallback.
+
 ## 3. Open Scripts and Add-Ins
 
 1. Open Autodesk Fusion and a design in the **Design** workspace.
@@ -110,7 +134,7 @@ The model should call `prepare_fusion_design`. A successful preparation returns:
 - `requested_output`: the eventual F3D file location.
 - `status`: `pending_fusion_execution`.
 
-**Pending means the JSON exists; the F3D has not been exported yet.** The model cannot run this script inside Fusion through the recipe-preparation tool.
+**Pending means the JSON exists; the F3D has not been exported yet.** Call `run_fusion_design` to execute through the registered add-in, or use the manual steps below.
 
 By default, files are prepared under **Documents → Workshop**:
 
@@ -139,7 +163,7 @@ On success it displays **Exported genuine Fusion archive** followed by the outpu
 plate-job.result.json
 ```
 
-That result contains `status: exported`, the F3D path and the file size. Errors appear in a Fusion message box with the traceback; an error is not an export confirmation.
+That result contains `status: exported`, the F3D path and the file size. Errors are recorded as `status: error` with diagnostics and a traceback in the result JSON; manual runs also show a Fusion message box. An error is not an export confirmation. Failed geometry remains in the new document for inspection.
 
 ## 7. Find and inspect the exported file
 
@@ -183,7 +207,7 @@ The preparation tools and Fusion script refuse to overwrite existing outputs. Ea
 
 Dimensions must be finite positive numbers. Negative origins are allowed. For a through-hole, make the cutting cylinder extend beyond both surfaces; the sample plate uses a cylinder starting at Z = −1 with height 6 for a 4 mm plate. A cut that misses the body or a join that does not intersect can fail inside Fusion.
 
-The bridge does not currently support recipe primitives for fillets, chamfers, threads, lofts, sweeps, arbitrary profiles, rotations, assemblies, joints, external references, STEP import or direct mesh export. These require manual Fusion work or a separately developed Fusion script. OpenSCAD provides the implemented STL/3MF route; see [CAD exports](CAD.md).
+The bridge does not currently support recipe primitives for fillets, chamfers, threads, lofts, sweeps, arbitrary profiles, rotations, assemblies, joints, external references or direct mesh export. Advanced geometry uses native Fusion scripts prepared with `prepare_fusion_script` and executed by WorkshopBridge. STEP/IGES/SAT/F3D imports are available separately through `prepare_fusion_import`. For an explicitly requested OpenSCAD project, OpenSCAD provides STL/3MF rendering; see [CAD exports](CAD.md).
 
 ## Updates and registrations
 
@@ -219,7 +243,25 @@ Later updates refresh these stable folders, so they do not require registration 
 | Invalid dimensions/origin | Use positive finite dimensions and three finite origin coordinates |
 | Cut/join fails | Check that the geometry intersects an existing body and that the first part is new |
 | Export succeeds but file seems missing | Check `requested_output`, the success message and the result JSON; your workspace may be custom |
-| Job is pending | Run WorkshopDesign inside Fusion; preparation alone cannot export F3D |
+| Job is pending/queued | Run WorkshopBridge, finish active commands, or use WorkshopDesign manually; preparation alone cannot export F3D |
+| Bridge offline | Register/run WorkshopBridge once and enable Run on Startup; check the configured queue directory matches |
+| execution_unconfirmed | A run has no confirmed completion; inspect Fusion/output and use new filenames rather than replaying it |
 | Error message/traceback | Copy the error and job details for diagnosis; do not assume the F3D completed |
 
 For all Workshop capabilities, see the [full feature list](FEATURES.md). For installation details, see [Getting started](GETTING-STARTED.md).
+
+## Native modelling and separate part files
+
+Use `create_cad_project` with `backend: "fusion"` and named parts, each containing either a primitive `recipe` or native Python `source`. It creates a new folder, separate source/job/archive filenames per part and a `project.json` manifest. Native Python defines `build(design, root)`. The bridge supplies a new parametric document, executes native modelling APIs, checks for geometry and timeline errors, and exports the archive. `run_fusion_project` queues all parts; `fusion_project_status` reports each result and saved link. Separate files do not create an assembly automatically. Model a native assembly explicitly when needed.
+
+For example, a recipe project argument is:
+
+```json
+{"folder":"bracket-v1","backend":"fusion","parts":[{"name":"base","recipe":{"parts":[{"kind":"box","width":40,"depth":30,"height":4}]}},{"name":"spacer","recipe":{"parts":[{"kind":"cylinder","diameter":12,"height":10}]}}],"notes":"Dimensions are mm. Independent parts; assembly placement not yet constrained."}
+```
+
+Then call `run_fusion_project` with `project_file: "bracket-v1/project.json"` and check `fusion_project_status` with that path. Each part reports its own success/failure. For a requested OpenSCAD project, choose `backend: "openscad"` and deliver/render its separate SCAD files instead. The tools never convert a failed Fusion project into OpenSCAD.
+
+The model workflows include design intent, datums, units, constrained sketches, solid/surface features, topology selection, assemblies, tolerances, manufacturing constraints and validation. Guidance improves behaviour but cannot guarantee an arbitrary model's competence or the correctness of generated geometry. Review actual Fusion feature/shape results.
+
+For a native script starting point, see [the filleted plate source](../examples/fusion_native_part.py). It defines `build(design, root)` for the native script tool, rather than a manually registered standalone script.

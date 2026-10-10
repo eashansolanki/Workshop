@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "workshop"
-version = "0.4.0"
+version = "0.6.0"
 description = "Local LM Studio MCP tools and Bionic skills for research, documents, code and CAD"
 requires-python = ">=3.11"
 dependencies = ["mcp>=1.20,<2", "python-docx>=1.1,<2", "openpyxl>=3.1,<4", "python-pptx>=1.0,<2", "httpx>=0.28,<1", "beautifulsoup4>=4.13,<5", "playwright>=1.50,<2"]

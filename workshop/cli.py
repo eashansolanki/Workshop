@@ -5,6 +5,8 @@ import json
 import os
 import sys
 from .server import mcp
+from . import core
+from pathlib import Path
 
 
 def emit(result):
@@ -45,7 +47,15 @@ def main():
     parser.add_argument("arguments", nargs="?", default="{}")
     options = parser.parse_args()
     try:
-        asyncio.run(invoke(options))
+        if core.bionic_mode() and not options.url:
+            folder = Path.cwd().resolve()
+            if (folder / "workshop/server.py").is_file() or folder == Path.home().resolve() or folder == Path(folder.anchor):
+                raise PermissionError("Run the Bionic CLI from its current project working directory, not the plugin/home folder")
+            # Direct CLI has an owner/host-selected cwd, unlike a global MCP process.
+            with core.workspace_scope(folder):
+                asyncio.run(invoke(options))
+        else:
+            asyncio.run(invoke(options))
     except Exception as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         sys.exit(1)

@@ -66,7 +66,7 @@ if [ "$UPDATE" = 1 ]; then
     UPDATE_ARGUMENT=--update
     printf 'Updating Workshop. Old managed releases are removed only after successful checks. Your output files are preserved. Close Fusion and Bionic as well as LM Studio.\n'
 fi
-printf '\nWorkshop\n\nThis installs eight LM Studio integrations and one Bionic skill.\nExisting LM Studio settings are backed up.\nPython and JavaScript tools run with your user permissions.\nClose LM Studio before continuing.\n\n'
+printf '\nWorkshop\n\nThis installs eight native integrations in LM Studio and Bionic, plus an optional Bionic skill.\nExisting LM Studio and Bionic settings are backed up.\nPython and JavaScript tools run with your user permissions.\nClose LM Studio before continuing.\n\n'
 if [ "$YES" = 0 ]; then
     if [ ! -r /dev/tty ]; then
         printf 'Run with --yes for noninteractive installation.\n' >&2; exit 1
@@ -102,7 +102,7 @@ if [ ! -x "$RUNTIME/bin/uv" ]; then
         printf 'Download failed. Details: %s\n' "$LOG" >&2; exit 1
     fi
 fi
-RELEASE="$BASE/releases/0.4.0-$(date +%s)-$$"
+RELEASE="$BASE/releases/0.6.0-$(date +%s)-$$"
 mkdir -p "$RELEASE"
 cp -R "$TEMPORARY/workshop/." "$RELEASE/"
 if ! "$RUNTIME/bin/uv" run --no-project --managed-python --python 3.12 "$RELEASE/installer/install.py" --release "$RELEASE" --runtime "$RUNTIME" --workspace "$WORKSPACE" --config "$CONFIG" --log "$LOG" $UPDATE_ARGUMENT; then

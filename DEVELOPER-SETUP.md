@@ -22,7 +22,7 @@ Each skill is a separate integration: advanced-web-browsing, word-documents, exc
 
 Ask: “Use the Excel Spreadsheets integration, load its workflow, and create a budget in my workspace.” Skill guidance instructs the model; it is not a guarantee that every model will follow every step.
 
-To retain the original single integration instead, run bootstrap with `--combined`. That mode continues to expose all 22 tools, including `list_skills` and `get_skill`. Do not enable both configurations together unless you want duplicate tool collections.
+To retain the original single integration instead, run bootstrap with `--combined`. That mode continues to expose all combined tools, including `list_skills` and `get_skill`. Do not enable both configurations together unless you want duplicate tool collections.
 
 The root `mcp.json` is a portable package template with `${PLUGIN_ROOT}`. For LM Studio use bootstrap's generated absolute-path configuration rather than assuming host substitution support.
 
@@ -30,7 +30,9 @@ The root `mcp.json` is a portable package template with `${PLUGIN_ROOT}`. For LM
 
 ## Bionic by LM Studio
 
-In Settings > Skills, add each `skills/*/SKILL.md`. The eight skills are:
+Use `config/bionic.mcp.json` to add each native connection in Bionic’s Connected Apps/MCP settings. Bionic’s native configuration uses a `servers` array with `id`, `name`, `enabled`, and a `connection` object containing `type: stdio`, `command`, `args`, and `env`. LM Studio’s `mcpServers` object is a different format and is not shared. The automatic installer registers both formats separately.
+
+Optionally add generated `Bionic/SKILL.md` in Settings > Skills; it contains concrete runtime paths. The eight workflows are:
 
 - Advanced web browsing
 - Word documents
@@ -41,25 +43,26 @@ In Settings > Skills, add each `skills/*/SKILL.md`. The eight skills are:
 - OpenSCAD and Fusion
 - Python, JavaScript and Next.js
 
-The `skills/` files are preserved and remain directly installable in Bionic. Bionic explicitly documents standard Agent Skills installation. Its documented skills support does not establish that it imports this package manifest or shares LM Studio's MCP configuration. If your Bionic version exposes MCP settings, connect the generated server configuration there. Otherwise the included skills instruct Bionic to use its built-in terminal to call the same tools through the CLI:
+The `skills/` files are preserved and remain directly installable in Bionic. Bionic explicitly documents standard Agent Skills installation. Its documented skills support does not establish that it imports this package manifest or shares LM Studio's MCP configuration. If your Bionic version exposes MCP settings, connect the generated server configuration there. If native connections are unavailable, use the generated skill’s terminal fallback in a project with Allow coding enabled:
 
 ```sh
-cd "/absolute/path/to/workshop"
-export WORKSHOP_WORKSPACE="/absolute/path/to/your/work"
+cd "/absolute/path/to/current-bionic-project"
+export PYTHONPATH="/absolute/path/to/workshop"
+export WORKSHOP_WORKSPACE_MODE=bionic
 export WORKSHOP_ALLOW_CODE=1
-export PLAYWRIGHT_BROWSERS_PATH="$PWD/.browsers"
-.venv/bin/python -m workshop.cli list
-.venv/bin/python -m workshop.cli capabilities
-.venv/bin/python -m workshop.cli create_word '{"output":"report.docx","title":"Report","blocks":[{"type":"paragraph","text":"Hello."}]}'
+export PLAYWRIGHT_BROWSERS_PATH="/absolute/path/to/workshop/.browsers"
+"/absolute/path/to/workshop/.venv/bin/python" -m workshop.cli list
+"/absolute/path/to/workshop/.venv/bin/python" -m workshop.cli capabilities
+"/absolute/path/to/workshop/.venv/bin/python" -m workshop.cli create_word '{"output":"report.docx","title":"Report","blocks":[{"type":"paragraph","text":"Hello."}]}'
 ```
 
 For multiple browser interactions in Bionic, keep the local server running in a Bionic-managed terminal so page state survives between CLI calls:
 
 ```sh
-.venv/bin/python -m workshop.server --transport streamable-http
+"/absolute/path/to/workshop/.venv/bin/python" -m workshop.server --transport streamable-http
 ```
 
-In a second terminal, use `.venv/bin/python -m workshop.cli --url http://127.0.0.1:8765/mcp browse_web '{"action":"open","url":"https://example.com"}'`, then further read/click/fill calls with the same `--url`. The HTTP adapter preserves the isolated browser across separate CLI processes. Ordinary standalone CLI calls are stateless. Stop the managed server after the task.
+In a second terminal, use `"/absolute/path/to/workshop/.venv/bin/python" -m workshop.cli --url http://127.0.0.1:8765/mcp browse_web '{"action":"open","url":"https://example.com"}'`, then further read/click/fill calls with the same `--url`. The HTTP adapter preserves the isolated browser across separate CLI processes. Ordinary standalone CLI calls are stateless. Stop the managed server after the task.
 
 Use `.venv/Scripts/python.exe` and the corresponding PowerShell environment assignments on Windows. `config/bionic.env.json` records the needed values. Give Bionic the absolute plugin and workspace paths once; the skill uses these for subsequent terminal calls. No separate compiled “Bionic plugin API” is assumed.
 
@@ -97,3 +100,7 @@ The recipe supports boxes/cylinders and new/join/cut operations, in millimetres.
 This upload bundle excludes development tests and reports. Check server startup, affected tools and generated output files in an isolated workspace. Fusion archive export and host-app behavior require verification inside their respective applications.
 
 For release packaging and Python wheel builds, see the [build guide](docs/BUILDING.md).
+
+Fusion automation uses `workshop/fusion_bridge.py` and `fusion/WorkshopBridge`, with geometry in `fusion/WorkshopDesign`. Both CAD integrations expose preparation, import, run, status and open tools. Register the add-in once in Fusion; see [automatic execution](docs/FUSION360.md#automatic-execution-register-workshopbridge-once). Run regression checks with `python3 -m unittest discover -s tests -v`. Mocked API tests do not establish live Fusion compatibility.
+
+Bionic connections use the project root from the host per request; no configured global output folder is inherited. If roots are unavailable, use the CLI from the host-selected project terminal. Structured file tools enforce path containment; strict macOS code subprocesses also enforce writes at the OS level. Native Fusion Python is refused in this strict mode because Fusion executes it outside the subprocess sandbox. Use read_file_snapshot/edit_file for version-checked edits and see README for recovery from ambiguous search text.

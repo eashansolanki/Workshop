@@ -1,1 +1,1 @@
-{"autodeskProduct":"Fusion360","type":"script","author":"Workshop","description":{"":"Build recipe geometry and export a genuine F3D archive"},"version":"0.1.0","runOnStartup":false,"supportedOS":"windows|mac"}
+{"autodeskProduct":"Fusion360","type":"script","author":"Workshop","description":{"":"Build native recipe/script geometry or import CAD and export a genuine F3D archive"},"version":"0.3.0","runOnStartup":false,"supportedOS":"windows|mac"}

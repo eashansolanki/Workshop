@@ -6,7 +6,7 @@ This guide takes you from downloading Workshop to using its integrations and exp
 
 Download `install.sh` from this repository or its GitHub release. If you downloaded `workshop.zip`, extract it and find `install.sh` inside the `workshop` folder.
 
-1. Close LM Studio.
+1. Close LM Studio, Bionic and Fusion.
 2. Open Terminal.
 3. Type `bash `, including the space, then drag `install.sh` from Finder into Terminal. Press Return.
 4. Confirm installation when prompted and wait for **Installation complete**.
@@ -17,7 +17,7 @@ Alternatively, from the folder containing the script:
 bash install.sh
 ```
 
-The installer downloads private Python and Node runtimes and Chromium, checks all eight integrations, backs up your LM Studio configuration and adds Workshop. The initial installation needs an internet connection. Keep the final output: it contains your Bionic skill path.
+The installer downloads private Python and Node runtimes and Chromium, checks all eight integrations, backs up both LM Studio and Bionic configurations and adds eight native connections to each app. The initial installation needs an internet connection. Keep the final output: it contains your Bionic skill path.
 
 ## 2. Use Workshop in LM Studio
 
@@ -30,13 +30,14 @@ Example:
 
 > Use Workshop's Excel integration. Check capabilities, load its workflow and create a monthly budget spreadsheet in my workspace.
 
-Each integration covers one of the eight workflows listed in the [README](../README.md). The default output folder is `~/Documents/Workshop`.
+Each integration covers one of the eight workflows listed in the [README](../README.md). LM Studio’s default output folder is `~/Documents/Workshop`. Bionic instead uses its current project working directory and refuses to fall back to that global folder.
 
-## 3. Add Workshop to Bionic
+## 3. Use Workshop in Bionic
 
-1. Open **Settings → Skills → Add file** in Bionic.
-2. Select the `SKILL.md` file whose full path was printed at the end of installation.
-3. Ask Bionic to use Workshop for your task.
+1. Restart Bionic after installing or updating.
+2. Check **Settings → Connected Apps / MCP** for the eight enabled `workshop-*` connections. Bionic uses its own settings; LM Studio’s configuration does not connect these automatically.
+3. Ask Bionic to call Workshop’s `capabilities` and `get_workflow`. Confirm `workspace_ready` is true and `workspace` is the current project. If Bionic does not expose a project root over MCP, use the installed CLI from its current project terminal; do not cd to the plugin.
+4. Optionally add the printed `Bionic/SKILL.md` through **Settings → Skills → Add file** for additional routing guidance. Native MCP connections supply the full workflows directly.
 
 The installed skill hub contains all eight workflows and the runtime paths it needs. You do not need to add eight separate files when using this hub.
 
@@ -131,7 +132,7 @@ See the [CAD guide](CAD.md) for geometry and printing details. Numbers conversio
 | Problem | Next step |
 | --- | --- |
 | Workshop is missing in LM Studio | Confirm installation finished, restart LM Studio and check its MCP/integration controls |
-| Bionic cannot find the tools | Add the installed `Bionic/SKILL.md` printed by the installer and keep its release directory in place |
+| Bionic cannot find the tools | Run the current updater, restart Bionic and check the workshop-* entries in Connected Apps/MCP. A successful capabilities tool response verifies the connection. Adding only LM Studio’s mcp.json does not connect Bionic. |
 | WorkshopDesign is missing in Fusion | Add the folder containing both the `.py` and `.manifest` files |
 | Fusion cannot open the recipe | Select the job JSON returned by `prepare_fusion_design` |
 | F3D export says the file exists | Prepare another job with a new `.f3d` filename |
@@ -140,3 +141,7 @@ See the [CAD guide](CAD.md) for geometry and printing details. Numbers conversio
 On macOS the default setup log is `~/Library/Application Support/Workshop/setup.log`. On Linux it is `~/.local/share/workshop/setup.log`, or beneath your configured data directory. Python and JavaScript tools run with your user permissions; execute only code you trust.
 
 For developer configuration and release builds, use [source setup](../DEVELOPER-SETUP.md) and the [build guide](BUILDING.md).
+
+## Automatic Fusion execution
+
+The installer also prints a stable `fusion/WorkshopBridge` add-in folder. Register that folder under Fusion Add-Ins, run it once and enable Run on Startup. Models can then call `run_fusion_design` and verify `fusion_design_status` for a clickable local saved-design link. For native CAD imports and queue troubleshooting, see the [Fusion guide](FUSION360.md#automatic-execution-register-workshopbridge-once).

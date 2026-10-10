@@ -1,0 +1,39 @@
+{
+  "backend": "fusion",
+  "complexity": "simple",
+  "purpose": "Provide a compact spacer plate with rounded handling edges.",
+  "context": "An unloaded desk prototype; no load-bearing claim is required.",
+  "manufacturing": "Prototype in PLA by FDM; verify the actual printer/material settings before fabrication.",
+  "requirements": [
+    {"id":"width","description":"Match the requested plate width.","acceptance":"40 mm envelope in local X, within 0.1 mm.","verification":"Measure the actual Fusion BRep envelope."},
+    {"id":"depth","description":"Match the requested plate depth.","acceptance":"30 mm envelope in local Y, within 0.1 mm.","verification":"Measure the actual Fusion BRep envelope."},
+    {"id":"thickness","description":"Maintain the requested nominal thickness.","acceptance":"4 mm envelope in local Z, within 0.1 mm.","verification":"Measure the actual Fusion BRep envelope."},
+    {"id":"rounded_edges","description":"Remove sharp handling edges without changing the overall envelope.","acceptance":"1 mm native edge fillets, no failed timeline features.","verification":"Inspect fillet properties and viewport; envelope checks do not prove fillet radii."}
+  ],
+  "parameters": [
+    {"name":"width","value":40,"unit":"mm","basis":"user","reason":"The requested footprint."},
+    {"name":"depth","value":30,"unit":"mm","basis":"user","reason":"The requested footprint."},
+    {"name":"thickness","value":4,"unit":"mm","basis":"user","reason":"The requested spacing."},
+    {"name":"edge_radius","value":1,"unit":"mm","basis":"assumption","reason":"A small rounding that leaves the 4 mm plate manufacturable; confirm preference."}
+  ],
+  "concepts": [
+    {"name":"extruded plate with native fillets","approach":"A rectangular sketch, thickness extrusion, then edge fillets.","tradeoffs":"A short editable feature history fits the simple form; radius must remain feasible relative to thickness."}
+  ],
+  "selected_concept": "extruded plate with native fillets",
+  "selection_reason": "The geometry is prismatic and simple; surface/loft modelling would add complexity without improving this brief.",
+  "parts": [
+    {"name":"plate","role":"Provide the requested spacing footprint.","features":[
+      {"name":"footprint","operation":"dimensioned rectangular sketch","reason":"Establish the datum-aligned width and depth.","requirements":["width","depth"],"depends_on":[]},
+      {"name":"thickness","operation":"positive-Z extrusion","reason":"Establish the spacing thickness.","requirements":["thickness"],"depends_on":["footprint"]},
+      {"name":"edge_rounding","operation":"native edge fillet","reason":"Reduce sharp handling edges while preserving the footprint.","requirements":["rounded_edges"],"depends_on":["thickness"]}
+    ],"checks":[
+      {"requirement":"width","metric":"size_x_mm","expected":40,"tolerance":0.1},
+      {"requirement":"depth","metric":"size_y_mm","expected":30,"tolerance":0.1},
+      {"requirement":"thickness","metric":"size_z_mm","expected":4,"tolerance":0.1}
+    ]}
+  ],
+  "interfaces": [],
+  "assumptions": [
+    {"statement":"The prototype carries no significant mechanical load.","risk":"A loaded application could require another material or thicker section.","resolution":"Confirm intended use before claiming strength or fabricating a load-bearing version."}
+  ]
+}

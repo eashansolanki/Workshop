@@ -30,12 +30,17 @@ def main():
     generator = "from workshop.integrations import mcp_configuration; import json,sys; print(json.dumps(mcp_configuration(sys.argv[1], json.loads(sys.argv[2]), combined=sys.argv[3]=='1')))"
     generated = subprocess.run([str(python), "-c", generator, str(python), json.dumps(environment), "1" if options.combined else "0"], cwd=root, capture_output=True, text=True, check=True)
     config = json.loads(generated.stdout)
+    from installer.install import bionic_configuration, bionic_environment, make_bionic_hub
+    (root / "config").mkdir(exist_ok=True)
     output = root / "config" / "lmstudio.mcp.json"
     output.write_text(json.dumps(config, indent=2))
-    (root / "config" / "bionic.env.json").write_text(json.dumps(environment, indent=2))
+    (root / "config" / "bionic.env.json").write_text(json.dumps(bionic_environment(environment), indent=2))
+    (root / "config" / "bionic.mcp.json").write_text(json.dumps(bionic_configuration(config), indent=2))
+    make_bionic_hub(root, environment)
     print(f"Generated LM Studio config: {output}")
     print("Merge the generated server entries into LM Studio's MCP editor. Existing host config was not modified.")
-    print("Bionic: add skills/*/SKILL.md in Settings > Skills; use the included terminal CLI if MCP settings are unavailable.")
+    print(f"Bionic uses separate settings: {root / 'config/bionic.mcp.json'}. Add these connections in Bionic's Connected Apps/MCP settings; LM Studio's config is not shared.")
+    print(f"Optional Bionic skill with configured runtime paths: {root / 'Bionic/SKILL.md'}")
 
 
 if __name__ == "__main__":

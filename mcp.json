@@ -91,7 +91,7 @@
       "env": {
         "PYTHONPATH": "${PLUGIN_ROOT}",
         "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
-        "WORKSHOP_ALLOW_CODE": "0"
+        "WORKSHOP_ALLOW_CODE": "1"
       },
       "type": "stdio",
       "cwd": "${PLUGIN_ROOT}"
@@ -107,7 +107,7 @@
       "env": {
         "PYTHONPATH": "${PLUGIN_ROOT}",
         "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
-        "WORKSHOP_ALLOW_CODE": "0"
+        "WORKSHOP_ALLOW_CODE": "1"
       },
       "type": "stdio",
       "cwd": "${PLUGIN_ROOT}"

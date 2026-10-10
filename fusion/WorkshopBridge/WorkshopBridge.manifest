@@ -1,0 +1,1 @@
+{"autodeskProduct":"Fusion360","type":"addin","author":"Workshop","description":{"":"Run local Workshop CAD jobs automatically on Fusion's main thread"},"version":"0.3.0","runOnStartup":true,"supportedOS":"windows|mac"}

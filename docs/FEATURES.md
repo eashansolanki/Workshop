@@ -83,7 +83,13 @@ Recipe-generated SCAD uses `$fn=96`. Custom SCAD can use the broader OpenSCAD la
 ## Autodesk Fusion / Fusion 360
 
 - `prepare_fusion_design`: validate and save a complete job JSON with absolute output path and pending status.
-- Included WorkshopDesign script runs inside Autodesk Fusion.
+- Included WorkshopDesign engine runs inside Autodesk Fusion, manually or through the startup WorkshopBridge add-in.
+- `prepare_fusion_script`: native modelling source for advanced shapes, using trusted `build(design, root)` Python.
+- `prepare_fusion_import`: native STEP/IGES/SAT/F3D imports of existing CAD.
+- `run_fusion_design` / `fusion_design_status`: automatic queue, structured errors and verified local archive links.
+- `create_cad_project`: new folder with separate source/job/output files per part, respecting Fusion/OpenSCAD selection.
+- `run_fusion_project` / `fusion_project_status`: batch execution and per-part completion/links.
+- `open_fusion_design`: reopen a saved local F3D through the add-in.
 - 1–100 box/cylinder primitives, millimetre units and finite 3D origins.
 - New bodies, intersecting joins and subtractive cuts.
 - New parametric document with named sketch/extrusion history and Z-offset construction planes.
@@ -91,7 +97,7 @@ Recipe-generated SCAD uses `$fn=96`. Custom SCAD can use the broader OpenSCAD la
 - Success message and companion `.result.json` with path/status/size.
 - New filenames required; existing outputs are not overwritten.
 
-No headless F3D writer, automatic Fusion UI control, named parameter system, in-place existing-model edits, fillet/thread/loft/sweep recipe operations, assemblies or direct Fusion mesh export are implemented. Live F3D export remains unverified. See the [complete Fusion guide](FUSION360.md).
+No headless F3D writer or in-place existing-model edit tool is implemented. Primitive recipes do not express fillets/threads/lofts/sweeps/assemblies; native scripts can use those Fusion APIs and named parameters. Multi-part files do not automatically create a constrained assembly. Native scripts require trusted code enabled. Live F3D export remains unverified. See the [complete Fusion guide](FUSION360.md).
 
 ## Python, JavaScript and Next.js
 
