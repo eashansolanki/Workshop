@@ -79,4 +79,9 @@ The installer prints the Bionic skill path and keeps a setup log in the installa
 - [Contributing](CONTRIBUTING.md)
 - [Verification report](TEST-REPORT.md)
 
-Source code is in `workshop/`, workflows in `skills/`, the Fusion bridge in `fusion/`, and installation code in `installer/`. `knowledge.txt` indexes Python functions, components and loops.
+Source code is in `workshop/`, workflows in `skills/`, the Fusion bridge in `fusion/`, and installation code in `installer/`.
+
+## FUSION 360 SETUP GUIDE
+
+## Help
+If you can help develop this project more please do by submitting a PR as some of the refinements and two features have been vibe coded.
