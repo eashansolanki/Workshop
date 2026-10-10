@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "workshop",
+  "version": "0.3.1",
+  "description": "Local research, Office/iWork, Python/JavaScript and CAD tools for LM Studio with Bionic skills."
+}

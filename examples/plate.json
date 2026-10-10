@@ -1,0 +1,22 @@
+{
+  "parts": [
+    {
+      "kind": "box",
+      "width": 40,
+      "depth": 30,
+      "height": 4,
+      "operation": "new"
+    },
+    {
+      "kind": "cylinder",
+      "diameter": 5,
+      "height": 6,
+      "origin": [
+        10,
+        10,
+        -1
+      ],
+      "operation": "cut"
+    }
+  ]
+}

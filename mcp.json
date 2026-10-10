@@ -1,0 +1,133 @@
+{
+  "mcpServers": {
+    "workshop-advanced-web-browsing": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "advanced-web-browsing"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-word-documents": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "word-documents"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-excel-spreadsheets": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "excel-spreadsheets"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-powerpoint-presentations": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "powerpoint-presentations"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-apple-iwork": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "apple-iwork"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-3d-printing-design": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "3d-printing-design"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-openscad-and-fusion": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "openscad-and-fusion"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    },
+    "workshop-python-javascript-nextjs": {
+      "command": "${PLUGIN_ROOT}/.venv/bin/python",
+      "args": [
+        "-m",
+        "workshop.server",
+        "--integration",
+        "python-javascript-nextjs"
+      ],
+      "env": {
+        "PYTHONPATH": "${PLUGIN_ROOT}",
+        "WORKSHOP_WORKSPACE": "${PLUGIN_ROOT}/workspace",
+        "WORKSHOP_ALLOW_CODE": "0"
+      },
+      "type": "stdio",
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  },
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+}

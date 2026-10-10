@@ -1,7 +1,6 @@
 # Workshop
 
-WARNING: MACOS & Linux ONLY FOR NOW 
-Local tools for **LM Studio** and **Bionic**: research the web, create documents, write code and design objects in Fusion and OpenScad.
+Local tools for **LM Studio** and **Bionic**: research the web, create documents, write code and design objects for 3D printing.
 
 Workshop provides eight independently selectable MCP integrations in LM Studio. Bionic uses the same workflows as skills, backed by the same local tools.
 
@@ -81,4 +80,3 @@ The installer prints the Bionic skill path and keeps a setup log in the installa
 - [Verification report](TEST-REPORT.md)
 
 Source code is in `workshop/`, workflows in `skills/`, the Fusion bridge in `fusion/`, and installation code in `installer/`. `knowledge.txt` indexes Python functions, components and loops.
-

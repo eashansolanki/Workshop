@@ -1,0 +1,27 @@
+{
+  "bambu": {
+    "checked": "2026-10-10",
+    "scope": "Selected reference models, not an exhaustive or permanently current catalogue",
+    "models": [
+      {"model":"A1 mini","build_volume_mm":[180,180,180],"source":"https://uk.store.bambulab.com/products/a1-mini"},
+      {"model":"A1","notes":"Open frame; manufacturer cautions against large/high-density conventional high-temperature-material parts because of warping and interlayer-strength risks.","source":"https://us.store.bambulab.com/products/a1"},
+      {"model":"P1S","notes":"Consult model specifications, material requirements and fitted nozzle/extruder before selecting engineering or abrasive filament.","source":"https://bambulab.com/en-us/p1"},
+      {"model":"X1 Carbon","notes":"Consult current product specifications and compatible Bambu Studio profiles.","source":"https://bambulab.com/uk/x1"}
+    ],
+    "compare":"https://bambulab.com/en-us/compare",
+    "knowledge_base":"https://wiki.bambulab.com/en/home",
+    "slicer":"https://github.com/bambulab/BambuStudio",
+    "workflow":"Ask exact printer/nozzle/plate/filament and slicer version; use manufacturer profile; check printable region, brim, purge zones, supports and orientation. Do not send/start prints without explicit user authorization. Verify newer models through current official sources."
+  },
+  "prusa": {
+    "checked":"2026-10-10",
+    "models":[
+      {"model":"MK4S","build_volume_mm":[250,210,220],"filament_diameter_mm":1.75,"max_nozzle_c":290,"max_bed_c":120,"source":"https://www.prusa3d.com/product/original-prusa-mk4s-3d-printer/"},
+      {"model":"XL / CORE One family / MINI+","notes":"Select exact model and revision and retrieve its official specs; family members differ.","source":"https://www.prusa3d.com/category/3d-printers/"}
+    ],
+    "knowledge_base":"https://help.prusa3d.com/",
+    "slicer":"https://github.com/prusa3d/PrusaSlicer",
+    "design_source":"https://help.prusa3d.com/article/modeling-with-3d-printing-in-mind_164135",
+    "design_notes":"Prusa describes fit tolerance as dependent on geometry, orientation, calibration, settings and material. Its suggested initial moving-part clearance is at least 0.3 mm; prototype/calibrate rather than treating this as a guaranteed fit."
+  }
+}
