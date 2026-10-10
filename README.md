@@ -97,4 +97,4 @@ The installer prints the Bionic skill path and keeps a setup log in the installa
 
 ## Help
 
-If you can help develop this project more please do by submitting a PR as some of the refinements and two features have been vibe coded.
+If you can help develop this project more please do by submitting a PR as some of the refinements and some features have been vibe coded. 
